@@ -1,6 +1,6 @@
 // Daily Test Manager - Handles daily test generation and management
-import { apiService } from '../services/apiService.js';
-import { readingTestData } from '../data/readingTestData.js';
+import { apiService } from '../services/apiService';
+import { readingTestData } from '../data/readingTestData';
 
 export class DailyTestManager {
   constructor() {
