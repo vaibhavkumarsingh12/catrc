@@ -12,6 +12,10 @@ export class APIService {
     try {
       const prompt = this.createPrompt(difficulty, topic, wordCount);
       
+      // Add timeout to prevent hanging
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+      
       const response = await fetch(`${GOOGLE_AI_ENDPOINT}?key=${this.apiKey}`, {
         method: 'POST',
         headers: {
@@ -23,8 +27,11 @@ export class APIService {
               text: prompt
             }]
           }]
-        })
+        }),
+        signal: controller.signal
       });
+
+      clearTimeout(timeoutId);
 
       if (!response.ok) {
         throw new Error(`API request failed: ${response.status}`);

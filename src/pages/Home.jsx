@@ -16,15 +16,11 @@ const Home = () => {
 
   const loadStats = async () => {
     try {
-      // Load daily test stats
-      const dailyTestStats = await dailyTestManager.getDailyTestStats()
-      setDailyStats(dailyTestStats)
-      
-      // Load overall test stats
+      // Load overall test stats (synchronous, should not fail)
       const overallStats = getTestStats()
       setTestStats(overallStats)
       
-      // Load user stats from localStorage
+      // Load user stats from localStorage (synchronous, should not fail)
       const results = JSON.parse(localStorage.getItem('readingResults') || '[]')
       if (results.length > 0) {
         const avgWPM = Math.round(results.reduce((sum, result) => sum + result.wpm, 0) / results.length)
@@ -37,6 +33,23 @@ const Home = () => {
           avgComprehension,
           testsCompleted,
           dailyTests
+        })
+      }
+      
+      // Load daily test stats (async, may fail)
+      try {
+        const dailyTestStats = await dailyTestManager.getDailyTestStats()
+        setDailyStats(dailyTestStats)
+      } catch (dailyError) {
+        console.error('Error loading daily stats:', dailyError)
+        // Set fallback daily stats
+        setDailyStats({
+          easy: 0,
+          moderate: 0,
+          hard: 0,
+          total: 0,
+          generated: 0,
+          fallback: 0
         })
       }
     } catch (error) {
